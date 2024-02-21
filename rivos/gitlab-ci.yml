@@ -1,0 +1,72 @@
+# Copyright (c) 2022 by Rivos Inc.
+# Licensed under the Apache License, Version 2.0, see LICENSE for details.
+# SPDX-License-Identifier: Apache-2.0
+
+include:
+  - project: 'rv/it/int/rivos-sdk'
+    ref: rivos/main
+    file: '/packager/gitlab-ci-packaging-helper.yml'
+
+variables:
+  GIT_STRATEGY: clone
+  GIT_SUBMODULE_STRATEGY: recursive
+  RIG_PATH: "/rivos/rig"
+
+.common-build:
+  script:
+    - >
+      apt-get update -qq &&
+      DEBIAN_FRONTEND=noninteractive
+      apt-get install -qq -y
+      bison
+      build-essential
+      flex
+      libboost-atomic-dev
+      libboost-context-dev
+      libboost-date-time-dev
+      libboost-filesystem-dev
+      libboost-program-options-dev
+      libboost-regex-dev
+      libboost-system-dev
+      libboost-thread-dev
+      libdouble-conversion-dev
+      libevent-dev
+      libgmock-dev
+      liblzo2-dev
+      tzdata
+      ninja-build
+      cmake
+      git
+      libssl-dev
+      curl
+      libz-dev
+      liblz4-dev
+      libsnappy-dev
+      libzstd-dev
+    - >
+      cmake -S . -B build
+      -GNinja
+      -DCMAKE_BUILD_TYPE=Release
+      -DCMAKE_INSTALL_PREFIX=install
+      -DCMAKE_POSITION_INDEPENDENT_CODE=ON
+      -DVELOX_BUILD_MINIMAL=OFF
+      -DVELOX_BUILD_TESTING=ON
+      -DVELOX_ENABLE_BENCHMARKS=ON
+      -DVELOX_ENABLE_GPU=ON
+      -DCMAKE_CUDA_ARCHITECTURES="90"
+    - ninja -C build install
+
+nvidia-build:
+  stage: build
+  image: nvidia/cuda:12.2.2-devel-ubuntu22.04
+  tags: ["nvidia-a30"]
+  dependencies: ["prepare-version"]
+  script:
+    - !reference [.common-build, script]
+  artifacts:
+    when: always
+    paths:
+      - build/Testing
+      - install
+    reports:
+      junit: build/Testing/*.xml
