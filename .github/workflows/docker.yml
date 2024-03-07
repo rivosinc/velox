@@ -21,7 +21,7 @@ on:
       - scripts/setup-*.sh
       - .github/workflows/docker.yml
   push:
-    branches: [main]
+    branches: [main, circleci-add-cuda-1]
     paths:
       - scripts/*.dockfile
       - scripts/*.dockerfile
