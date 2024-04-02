@@ -89,7 +89,7 @@ clean:					#: Delete all build artifacts
 	rm -rf $(BUILD_BASE_DIR)
 
 cmake:					#: Use CMake to create a Makefile build system
-	mkdir -p $(BUILD_BASE_DIR)/$(BUILD_DIR) && \
+	mkdir -p $(BUILD_BASE_DIR)/$(BUILD_DIR)
 	cmake  -B \
 		"$(BUILD_BASE_DIR)/$(BUILD_DIR)" \
 		${CMAKE_FLAGS} \
@@ -107,7 +107,7 @@ debug:					#: Build with debugging symbols
 	$(MAKE) build BUILD_DIR=debug -j ${NUM_THREADS}
 
 release:				#: Build the release version
-	$(MAKE) cmake BUILD_DIR=release BUILD_TYPE=Release && \
+	$(MAKE) cmake BUILD_DIR=release BUILD_TYPE=Release
 	$(MAKE) build BUILD_DIR=release
 
 minimal_debug:			#: Minimal build with debugging symbols
